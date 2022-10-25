@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     # Local apps
     'accounts.apps.AccountsConfig',
+    'shortener.apps.ShortenerConfig',
 ]
 
 MIDDLEWARE = [
