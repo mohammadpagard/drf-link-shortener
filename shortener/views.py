@@ -7,7 +7,13 @@ from rest_framework.response import Response
 from rest_framework import status
 # Local apps
 from .models import LinkShortener
-from .serializers import ShortenerSerializer
+from .serializers import ShortenerSerializer, LinksSerializer
+
+
+class ShortenerView(APIView):
+    def get(self, request, short_url):
+        short_url = get_object_or_404(LinkShortener, active=True, short_url=short_url)
+        return redirect(short_url.long_url)
 
 
 class LinkShortenerView(APIView):
@@ -18,12 +24,11 @@ class LinkShortenerView(APIView):
         ser_data = self.serializer_class(data=request.POST)
         if ser_data.is_valid():
             ser_validate_data = ser_data.validated_data
-            LinkShortener.objects.create(long_url=ser_validate_data['long_url'])
+            LinkShortener.create_short_url(long_url=ser_validate_data.get('long_url'))
             return Response(ser_data.data, status=status.HTTP_201_CREATED)
         return Response(ser_data.data, status=status.HTTP_400_BAD_REQUEST)
 
-
-class ShortenerView(APIView):
-    def get(self, request, short_url):
-        short_url = get_object_or_404(LinkShortener, active=True, short_url=short_url)
-        return redirect(short_url.long_url)
+    def get(self, request):
+        links = LinkShortener.objects.all()
+        serializer_data = LinksSerializer(instance=links, many=True)
+        return Response(data=serializer_data.data, status=status.HTTP_200_OK)

@@ -31,7 +31,7 @@ class LinkShortener(models.Model):
                 long_url=long_url,
                 short_url=cls.random_char()
             )
-    
+
     def create_auto_short_url(self):
         if not self.short_url:
             rand_text = self.random_char()
